@@ -1,11 +1,9 @@
-package item
-
-import "errors"
+package models
 
 type Item struct {
 	Name  string
-	Count int
-	Price int
+	Count int64
+	Price int64
 }
 
 func (c *Item) IsAvailable() bool {
@@ -17,12 +15,8 @@ func (c *Item) Add() error {
 	return nil
 }
 
-func (c *Item) Remove() error {
-	if c.Count == 0 {
-		return errors.New("item is not available")
-	}
+func (c *Item) Remove() {
 	c.Count--
-	return nil
 }
 
 func (c *Item) GetName() string {

@@ -1,24 +1,25 @@
 package machine
 
 import (
-	"anksus/vending-machine-go/pkg/item"
-	"fmt"
+	itemPkg "anksus/vending-machine-go/pkg/models"
 )
 
 type VendingMachine struct {
-	Items   []item.Item
-	Balance *Balance
+	Items   map[string]*itemPkg.Item
+	Balance int64
+	State   State
 }
 
 func NewVendingMachine() *VendingMachine {
 	return &VendingMachine{
-		Items:   make([]item.Item, 0),
-		Balance: NewBalance(),
+		Items:   make(map[string]*itemPkg.Item),
+		Balance: 0,
+		State:   &IdleState{},
 	}
 }
 
-func (v *VendingMachine) AddItem(i item.Item) {
-	v.Items = append(v.Items, i)
+func (v *VendingMachine) AddItem(i itemPkg.Item) {
+	v.Items[i.GetName()] = &i
 }
 
 func (v *VendingMachine) GetItems() []string {
@@ -29,17 +30,21 @@ func (v *VendingMachine) GetItems() []string {
 	return items
 }
 
-func (v *VendingMachine) DispenseItem(name string, balance *Balance) {
-	for _, v := range v.Items {
-		if v.GetName() == name {
-			err := v.Remove()
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			fmt.Println("Dispensing item: ", name)
-			return
-		}
-	}
-	fmt.Println("Item not found")
+func (v *VendingMachine) SelectItem(itemName string) error {
+	return v.State.SelectItem(v, itemName)
+}
+
+func (v *VendingMachine) InsertMoney(money int64) error {
+	return v.State.InsertMoney(v, money)
+}
+
+func (v *VendingMachine) DispenseItem() error {
+	return v.State.DispenseItem(v)
+}
+
+func (v *VendingMachine) SetState(s State) {
+	v.State = s
+}
+func (v *VendingMachine) GetInventory() map[string]*itemPkg.Item {
+	return v.Items
 }
