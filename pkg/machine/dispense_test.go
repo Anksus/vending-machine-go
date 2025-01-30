@@ -9,7 +9,7 @@ import (
 func getVMWithItem() *VendingMachine {
 	vm := NewVendingMachine()
 	item := itemPkg.Item{
-		Price: 1,
+		Price: 10,
 		Name:  "Coke",
 		Count: 1,
 	}
